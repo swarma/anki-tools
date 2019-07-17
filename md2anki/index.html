@@ -8,8 +8,9 @@
       .left_side_ads  { display:block; -webkit-flex:0.2; flex:0.2; }
       .right_side_ads { display:block; -webkit-flex:0.2; flex:0.2; }
       .example_body   { display:block; -webkit-flex:0.5; flex:0.5; margin:0 auto; padding:15px; background-color:wheat; text-align:center;  }
-      .example_input  { width:680px; height:200px; margin:0 auto; text-align:left; overflow:scroll; }
-      .example_output { width:680px; height:200px; margin:0 auto; text-align:left; overflow:scroll; }
+      .example_intro  { margin:3px; background-color:white; }
+      .example_input  { width:680px; height:240px; margin:0 auto; text-align:left; overflow:scroll; }
+      .example_output { width:680px; height:240px; margin:0 auto; text-align:left; overflow:scroll; }
       .converter_box  { display:-webkit-flex; display:flex; width:80%; margin:0 auto; }
       .markdown_input { display:block; -webkit-flex:1; flex:1; height:500px; }
       .output_body    { display:-webkit-flex; display:flex; flex-direction:column; -webkit-flex:1; flex:1; }
@@ -113,7 +114,9 @@
 ### 冲突类型的变项
 ### 建设性处理冲突的技巧
         </pre>
-        <p>在左侧输入以上内容，将会在右侧生成以下内容<br> (<b>右上</b>为 Q&A 格式, <b>右下</b>为 Anki 专用 CSV 格式)：</p>
+        <div class="example_intro">
+          <p>在左侧编辑框输入以上内容，将会在右侧编辑框生成以下内容<br> (<b>右上</b>为 Q&A 格式, <b>右下</b>为 Anki 专用 CSV 格式)：</p>
+        </div>
         <pre class="example_output">
 -----
 
@@ -312,7 +315,6 @@
         <button class="save_button" onclick='download("anki.csv",document.getElementById("anki_csv").value)'>保存为 anki.csv</button>
       </div>
     </div>
-
     <script src="conv.js"></script>
     <script>
       (function() {
