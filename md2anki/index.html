@@ -2,15 +2,30 @@
 <html>
   <head>
     <meta charset="utf-8">
+    <style>
+      body            { text-align:center; margin:0 auto; }
+      .example_box    { display:-webkit-flex; display:flex; flex-direction:row; width:96%; margin:0 auto;  }
+      .left_side_ads  { display:block; -webkit-flex:0.2; flex:0.2; }
+      .right_side_ads { display:block; -webkit-flex:0.2; flex:0.2; }
+      .example_body   { display:block; -webkit-flex:0.5; flex:0.5; margin:0 auto; padding:15px; background-color:wheat; text-align:center;  }
+      .example_input  { width:680px; height:200px; margin:0 auto; text-align:left; overflow:scroll; }
+      .example_output { width:680px; height:200px; margin:0 auto; text-align:left; overflow:scroll; }
+      .converter_box  { display:-webkit-flex; display:flex; width:80%; margin:0 auto; }
+      .markdown_input { display:block; -webkit-flex:1; flex:1; height:500px; }
+      .output_body    { display:-webkit-flex; display:flex; flex-direction:column; -webkit-flex:1; flex:1; }
+      .output_qna     { display:block; -webkit-flex:1; flex:1; margin-left:8px; }
+      .output_anki    { display:block; -webkit-flex:1; flex:1; margin-left:8px; margin-top:8px; overflow:scroll; white-space:nowrap; line-height:200%; font-size:16px; }
+      .save_button    { margin-left:8px; margin-top:5px; }
+    </style>
   </head>
-  <body style="text-align:center;margin:0 auto;">
-		<h1>把 Markdown 格式文本粘贴在左侧编辑区<br />问答格式 + Anki 导入格式文本将立刻显示在右侧</h1>
-		<h2>例如</h2>
-		<div style="width:96%;margin:0 auto;display:-webkit-flex;display:flex;flex-direction:row;">
-			<div style="display:block;-webkit-flex:0.2;flex:0.2;">
-			</div>
-			<div style="display:block;-webkit-flex:0.5;flex:0.5;padding:15px;background-color:wheat;text-align:center;margin:0 auto;" />
-				<pre style="width:680px;height:200px;margin:0 auto;text-align:left;overflow:scroll;" >
+  <body>
+    <h1>把 Markdown 格式文本粘贴在左侧编辑区<br />问答格式 + Anki 导入格式文本将立刻显示在右侧</h1>
+    <h2>例如</h2>
+    <div class="example_box">
+      <div class="left_side_ads">
+      </div>
+      <div class="example_body">
+        <pre class="example_input">
 # 第一部分 看入人里
 
 ## 第一章 人际沟通入门
@@ -97,9 +112,9 @@
 ### 关系系统中的冲突
 ### 冲突类型的变项
 ### 建设性处理冲突的技巧
-				</pre>
-				<p>在左侧输入以上内容，将会在右侧生成以下内容<br> (<b>右上</b>为 Q&A 格式, <b>右下</b>为 Anki 专用 CSV 格式)：</p>
-				<pre style="width:680px;height:200px;margin:0 auto;text-align:left;overflow:scroll;" >
+        </pre>
+        <p>在左侧输入以上内容，将会在右侧生成以下内容<br> (<b>右上</b>为 Q&A 格式, <b>右下</b>为 Anki 专用 CSV 格式)：</p>
+        <pre class="example_output">
 -----
 
 问题：第一部分 看入人里
@@ -283,18 +298,18 @@
 《第三部分 看人之间-第十二章 处理人际冲突》
 
 答案：冲突的本质、冲突的处理方式、关系系统中的冲突、冲突类型的变项、建设性处理冲突的技巧
-				</pre>
-			</div>
-			<div style="display:block;-webkit-flex:0.2;flex:0.2;">
-			</div>
-		</div>
+        </pre>
+      </div>
+      <div class="right_side_ads">
+      </div>
+    </div>
     <hr />
-    <div style="width:80%;margin:0 auto;display:-webkit-flex;display:flex;">
-      <textarea id="markdown" style="display:block;-webkit-flex:1;flex:1;height:500px;" ></textarea>
-      <div style="display:flex;flex-direction:column;-webkit-flex:1;flex:1;">
-        <textarea id="anki_qna" style="display:block;-webkit-flex:1;flex:1;margin-left:8px;" ></textarea>
-        <textarea id="anki_csv" style="display:block;-webkit-flex:1;flex:1;margin-left:8px;margin-top:8px;overflow:scroll;white-space:nowrap;line-height:200%;font-size:16px;" ></textarea>
-				<button style="margin-left:8px;margin-top:5px;" onclick='download("anki.csv",document.getElementById("anki_csv").value)'>保存为 anki.csv</button>
+    <div class="converter_box">
+      <textarea id="markdown" class="markdown_input" ></textarea>
+      <div class="output_body">
+        <textarea id="anki_qna" class="output_qna" ></textarea>
+        <textarea id="anki_csv" class="output_anki" ></textarea>
+        <button class="save_button" onclick='download("anki.csv",document.getElementById("anki_csv").value)'>保存为 anki.csv</button>
       </div>
     </div>
 
