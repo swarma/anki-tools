@@ -115,7 +115,7 @@ function markdown2QA(markdown_text) {
 	
 	for (let item of outline) {
 		let xpath = getXPathInOutline(outline, item);
-		if (item.children.length > 0 && item.level != 3) {
+		if (item.children.length > 0) {
 			qa_text += '-----\n\n问题：' + item.title + '\n\n' +
 				getAnkiChapterInfo(item, xpath) + '\n\n答案：';
 			for (let child_idx in item.children) {
@@ -137,7 +137,7 @@ function markdown2Anki(markdown_text) {
 	
 	for (let item of outline) {
 		let xpath = getXPathInOutline(outline, item);
-		if (item.children.length > 0 && item.level != 3) {
+		if (item.children.length > 0) {
 			anki_csv += markdown2HTML(item.title) + '\t' + 
 				markdown2HTML(getAnkiChapterInfo(item, xpath)) + '\t';
 			for (let child_idx in item.children) {
