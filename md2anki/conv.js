@@ -104,7 +104,8 @@ function getAnkiChapterInfo(item, xpath) {
 	if (item.level <= 2) {
 		anki_chap_info = '《' + xpath + markdown2HTML(item.title) + '》';
 	} else {
-		anki_chap_info = '《' + getNthLevelXPath(xpath, 3) + '》';
+		lv3_xpath = getNthLevelXPath(xpath, 3);
+		anki_chap_info = '《' + lv3_xpath.slice(0, lv3_xpath.length - 1) + '》';
 	}
 	return anki_chap_info;
 }
