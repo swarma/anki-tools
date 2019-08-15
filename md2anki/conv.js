@@ -83,13 +83,13 @@ function postProcess(input_str) {
 // 获取某项内容在给定的 Outline 中的 XPath
 // 形如 标题1-标题1.1-标题1.1.1
 function getXPathInOutline(outline, item) {
-	let xpath = "";
+	let xpath = [];
 	let parent_title = getParentTitle(outline, item.title);
 	while (parent_title.length != 0) {
-		xpath = markdown2HTML(parent_title) + "-" + xpath;
+		xpath.unshift(markdown2HTML(parent_title));
 		parent_title = getParentTitle(outline, parent_title);
 	}
-	return xpath;
+	return xpath.join('-');
 }
 
 function getNthLevelXPath(xpath, num) {
@@ -101,11 +101,12 @@ function getNthLevelXPath(xpath, num) {
 
 function getAnkiChapterInfo(item, xpath) {
 	let anki_chap_info = "";
-	if (item.level <= 2) {
-		anki_chap_info = '《' + xpath + markdown2HTML(item.title) + '》';
+	if (item.level == 1) {
+		anki_chap_info = '《' + markdown2HTML(item.title) + '》';
+	}	else if (item.level == 2) {
+		anki_chap_info = '《' + xpath + '-' + markdown2HTML(item.title) + '》';
 	} else {
-		lv3_xpath = getNthLevelXPath(xpath, 3);
-		anki_chap_info = '《' + lv3_xpath.slice(0, lv3_xpath.length - 1) + '》';
+		anki_chap_info = '《' + getNthLevelXPath(xpath, 3) + '》';
 	}
 	return anki_chap_info;
 }
