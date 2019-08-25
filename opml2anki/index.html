@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<meta name="author" content="pimgeek">
+<meta name="description" content="引思网自行开发的小工具,幕布导出 OPML 转存为 Anki 可导入的 CSV 文件 (学习骇客学员专用)">
+<meta name="keywords" content="引思网,在线转换工具,幕布,opml,anki,csv,导入,学习骇客">
+<title>幕布导出 OPML 在线转换为 Anki 可导入的 CSV 格式 | 在线格式转换工具 | 引思网</title>
+<style>
+body {
+text-align : center;
+margin : 0 auto;
+}
+.example_pane {
+display : flex;
+flex-direction : row;
+width : 96%;
+margin : 0 auto;
+}
+.left_side_ads {
+display : block;
+flex : 0.2;
+}
+.right_side_ads {
+display : block;
+flex : 0.2;
+}
+.example_body {
+display : block;
+flex : 0.5;
+margin : 0 auto;
+padding : 15px;
+background-color : wheat;
+text-align : center;
+}
+.example_intro {
+margin : 3px;
+background-color : white;
+}
+.example_input {
+width : 680px;
+height : 240px;
+margin : 0 auto;
+text-align : left;
+overflow : scroll;
+}
+.example_output {
+width : 680px;
+height : 240px;
+margin : 0 auto;
+text-align : left;
+overflow : scroll;
+}
+.converter_pane {
+display : flex;
+width : 80%;
+margin : 0 auto;
+}
+.input_body {
+display : flex;
+flex-direction : column;
+flex : 1;
+height : 500px;
+}
+.markdown_input {
+display : block;
+flex : 1;
+height : 500px;
+}
+.output_body {
+display : flex;
+flex-direction : column;
+flex : 1;
+}
+.output_qna {
+display : block;
+flex : 1;
+margin-left : 8px;
+}
+.output_anki {
+display : block;
+flex : 1;
+margin-left : 8px;
+margin-top : 8px;
+overflow : scroll;
+white-space : nowrap;
+line-height : 200%;
+font-size : 16px;
+}
+.save_button {
+margin-left : 8px;
+margin-top : 5px;
+}
+</style>
+<script src="../js/utils.js"></script>
+<script src="../lib/xml2json.min.js"></script>
+<!-- Matomo -->
+<script type="text/javascript">
+  var _paq = window._paq || [];
+  /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+  _paq.push(["setDocumentTitle", document.domain + "/" + document.title]);
+  _paq.push(["setCookieDomain", "*.hintsnet.com"]);
+  _paq.push(["setDomains", ["*.hintsnet.com"]]);
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="//hintsnet.com/matomo/";
+    _paq.push(['setTrackerUrl', u+'matomo.php']);
+    _paq.push(['setSiteId', '1']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<noscript><p><img src="//hintsnet.com/matomo/matomo.php?idsite=1&amp;rec=1" style="border:0;" alt="" /></p></noscript>
+<!-- End Matomo Code -->
+<h1>把 Markdown 文本粘贴在左侧编辑区<br />
+或点击左下方按钮打开幕布导出 OPML 文档<br />
+问答格式 + Anki 导入格式文本将立刻显示在右侧</h1>
+<h2>例如</h2>
+<div class="example_pane">
+  <div class="left_side_ads">
+      <!-- adsense autosize unit -->
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+      <!-- tools page ads -->
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-6251680727005039"
+        data-ad-slot="3618778328"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+      (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <!-- end adsense autosize unit code -->
+  </div>
+  <div class="example_body">
+    <pre class="example_input">
+# 第一部分 看入人里
+
+## 第一章 人际沟通入门
+### 我们为什么要沟通？
+#### 生理需求
+##### 有什么例子可以说明*沟通*在生理需求方面的作用？
+###### 从越南战俘创造密码的例子可以看到，人际沟通对健康是不可或缺的
+###### ![mark](http://myself.anki.wiki/mpic/20190715/fSWtnJtzonNR.png)
+#### 认同需求
+##### 我们对自我的认同，*来源*于哪里？
+###### 源自我们与他人的互动
+##### 有什么例子可以说明*沟通*在认同需求方面的作用？
+###### 阿韦龙的野孩子例子说明，我们出生在这个世界上时只有微量的甚至没有自我认同感，我们在别人诠释我们的过程中逐渐明了自己是谁
+###### ![mark](http://myself.anki.wiki/mpic/20190715/egDYJkMscLKT.png)
+#### 社交需求
+##### 社交需求包括哪些？
+###### 休闲、解闷、友谊、感情、娱乐和控制等
+##### 高等教育在满足*社交需求*方面有什么作用？
+###### 高等教育可以像提高智力一样*增加*生活中的各类关系
+#### 实际目标
+### 沟通的历程
+### 沟通的原则和迷思
+### 如何成为沟通高手
+## 第二章 人际沟通与社交媒体
+### 媒介沟通与面对面沟通
+### 媒介沟通的优缺点
+### 媒介沟通的影响因素
+### 运用媒体的能力
+## 第三章 沟通和认知
+### 沟通和自我
+### 自我的展现：沟通作为*印象管理*
+### 在关系中的自我袒露
+### 自我袒露的替代选择
+## 第四章 知觉：看到什么就是什么
+### 知觉历程
+### 影响知觉的因素
+### 知觉的常见倾向
+### 知觉检核
+### 同理心、认知复杂度与沟通
+## 第五章 情绪：感觉、思考和沟通
+### 什么是情绪
+### 影响情绪表达的因素
+### 情绪表达的*指导原则*
+### 情绪管理
+
+# 第二部分 看出人外
+
+## 第六章 语言：障碍与桥梁
+### 语言是符号
+### 理解和误解
+### 语言的影响
+### 性别与语言
+### 文化与语言
+## 第七章 非语言沟通：超越字词之外的信息
+### 非语言沟通的*特征*
+### 非语言沟通的*影响因素*
+### 非语言沟通的*类型*
+## 第八章 倾听：不只是听见
+### 倾听的定义
+### 倾听过程的要素
+### 倾听的挑战
+### 倾听反应的类型
+
+# 第三部分 看人之间
+
+## 第九章 沟通和关系的演变
+### 我们为什么要建立关系？
+### 人际关系的演变模式
+### 关系的特性
+### 对关系做沟通
+### 维持人际关系
+## 第十章 人际沟通中的亲密关系
+### 关系中的亲密
+### 家人间的沟通
+### 友人间的沟通
+### 爱人间的沟通
+## 第十一章 改善沟通气氛
+### 沟通气氛与肯定信息
+### 防卫：原因与对策
+### 保留面子
+## 第十二章 处理人际冲突
+### 冲突的本质
+### 冲突的处理方式
+### 关系系统中的冲突
+### 冲突类型的变项
+### 建设性处理冲突的技巧
+    </pre>
+    <div class="example_intro">
+      <p>在左侧编辑框输入以上内容, 将会在右侧编辑框生成以下内容<br>
+      (<b>右上</b>为 Q&amp;A 格式, <b>右下</b>为 Anki 专用 CSV 格式)</p>
+    </div>
+    <pre class="example_output">
+-----
+
+问题：第一部分 看入人里
+
+《第一部分 看入人里》
+
+答案：第一章 人际沟通入门、第二章 人际沟通与社交媒体、第三章 沟通和认知、第四章 知觉：看到什么就是什么、第五章 情绪：感觉、思考和沟通
+
+-----
+
+问题：第一章 人际沟通入门
+
+《第一部分 看入人里-第一章 人际沟通入门》
+
+答案：我们为什么要沟通？、沟通的历程、沟通的原则和迷思、如何成为沟通高手
+
+-----
+
+问题：生理需求
+
+《第一部分 看入人里-第一章 人际沟通入门-我们为什么要沟通？》
+
+答案：有什么例子可以说明*沟通*在生理需求方面的作用？
+
+-----
+
+问题：有什么例子可以说明*沟通*在生理需求方面的作用？
+
+《第一部分 看入人里-第一章 人际沟通入门-我们为什么要沟通？》
+
+答案：从越南战俘创造密码的例子可以看到，人际沟通对健康是不可或缺的、![mark](http://myself.anki.wiki/mpic/20190715/fSWtnJtzonNR.png)
+
+-----
+
+问题：认同需求
+
+《第一部分 看入人里-第一章 人际沟通入门-我们为什么要沟通？》
+
+答案：我们对自我的认同，*来源*于哪里？、有什么例子可以说明*沟通*在认同需求方面的作用？
+
+-----
+
+问题：我们对自我的认同，*来源*于哪里？
+
+《第一部分 看入人里-第一章 人际沟通入门-我们为什么要沟通？》
+
+答案：源自我们与他人的互动
+
+-----
+
+问题：有什么例子可以说明*沟通*在认同需求方面的作用？
+
+《第一部分 看入人里-第一章 人际沟通入门-我们为什么要沟通？》
+
+答案：阿韦龙的野孩子例子说明，我们出生在这个世界上时只有微量的甚至没有自我认同感，我们在别人诠释我们的过程中逐渐明了自己是谁、![mark](http://myself.anki.wiki/mpic/20190715/egDYJkMscLKT.png)
+
+-----
+
+问题：社交需求
+
+《第一部分 看入人里-第一章 人际沟通入门-我们为什么要沟通？》
+
+答案：社交需求包括哪些？、高等教育在满足*社交需求*方面有什么作用？
+
+-----
+
+问题：社交需求包括哪些？
+
+《第一部分 看入人里-第一章 人际沟通入门-我们为什么要沟通？》
+
+答案：休闲、解闷、友谊、感情、娱乐和控制等
+
+-----
+
+问题：高等教育在满足*社交需求*方面有什么作用？
+
+《第一部分 看入人里-第一章 人际沟通入门-我们为什么要沟通？》
+
+答案：高等教育可以像提高智力一样*增加*生活中的各类关系
+
+-----
+
+问题：第二章 人际沟通与社交媒体
+
+《第一部分 看入人里-第二章 人际沟通与社交媒体》
+
+答案：媒介沟通与面对面沟通、媒介沟通的优缺点、媒介沟通的影响因素、运用媒体的能力
+
+-----
+
+问题：第三章 沟通和认知
+
+《第一部分 看入人里-第三章 沟通和认知》
+
+答案：沟通和自我、自我的展现：沟通作为*印象管理*、在关系中的自我袒露、自我袒露的替代选择
+
+-----
+
+问题：第四章 知觉：看到什么就是什么
+
+《第一部分 看入人里-第四章 知觉：看到什么就是什么》
+
+答案：知觉历程、影响知觉的因素、知觉的常见倾向、知觉检核、同理心、认知复杂度与沟通
+
+-----
+
+问题：第五章 情绪：感觉、思考和沟通
+
+《第一部分 看入人里-第五章 情绪：感觉、思考和沟通》
+
+答案：什么是情绪、影响情绪表达的因素、情绪表达的*指导原则*、情绪管理
+
+-----
+
+问题：第二部分 看出人外
+
+《第二部分 看出人外》
+
+答案：第六章 语言：障碍与桥梁、第七章 非语言沟通：超越字词之外的信息、第八章 倾听：不只是听见
+
+-----
+
+问题：第六章 语言：障碍与桥梁
+
+《第二部分 看出人外-第六章 语言：障碍与桥梁》
+
+答案：语言是符号、理解和误解、语言的影响、性别与语言、文化与语言
+
+-----
+
+问题：第七章 非语言沟通：超越字词之外的信息
+
+《第二部分 看出人外-第七章 非语言沟通：超越字词之外的信息》
+
+答案：非语言沟通的*特征*、非语言沟通的*影响因素*、非语言沟通的*类型*
+
+-----
+
+问题：第八章 倾听：不只是听见
+
+《第二部分 看出人外-第八章 倾听：不只是听见》
+
+答案：倾听的定义、倾听过程的要素、倾听的挑战、倾听反应的类型
+
+-----
+
+问题：第三部分 看人之间
+
+《第三部分 看人之间》
+
+答案：第九章 沟通和关系的演变、第十章 人际沟通中的亲密关系、第十一章 改善沟通气氛、第十二章 处理人际冲突
+
+-----
+
+问题：第九章 沟通和关系的演变
+
+《第三部分 看人之间-第九章 沟通和关系的演变》
+
+答案：我们为什么要建立关系？、人际关系的演变模式、关系的特性、对关系做沟通、维持人际关系
+
+-----
+
+问题：第十章 人际沟通中的亲密关系
+
+《第三部分 看人之间-第十章 人际沟通中的亲密关系》
+
+答案：关系中的亲密、家人间的沟通、友人间的沟通、爱人间的沟通
+
+-----
+
+问题：第十一章 改善沟通气氛
+
+《第三部分 看人之间-第十一章 改善沟通气氛》
+
+答案：沟通气氛与肯定信息、防卫：原因与对策、保留面子
+
+-----
+
+问题：第十二章 处理人际冲突
+
+《第三部分 看人之间-第十二章 处理人际冲突》
+
+答案：冲突的本质、冲突的处理方式、关系系统中的冲突、冲突类型的变项、建设性处理冲突的技巧
+    </pre>
+  </div>
+  <div class="right_side_ads">
+    <!-- adsense autosize unit -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- tools page ads -->
+    <ins class="adsbygoogle"
+      style="display:block"
+      data-ad-client="ca-pub-6251680727005039"
+      data-ad-slot="3618778328"
+      data-ad-format="auto"
+      data-full-width-responsive="true"></ins>
+    <script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+    <!-- end adsense autosize unit code -->
+  </div>
+</div>
+<hr />
+<div class="converter_pane">
+  <div class="input_body">
+    <textarea id="markdown" class="markdown_input" ></textarea>
+    <p style="text-align:left;color:blue;">点击下面的按钮, 上传幕布导出 OPML 文档</p>
+    <input type="file" id="file_input" />
+  </div>
+  <div class="output_body">
+    <textarea id="anki_qna" class="output_qna" ></textarea>
+    <textarea id="anki_csv" class="output_anki" ></textarea>
+    <button class="save_button" onclick='download("anki.csv",document.getElementById("anki_csv").value)'>保存为 anki.csv</button>
+  </div>
+</div>
+<h2>如有改进建议，<a href="https://anki.wiki/">请移步学习骇客网站，直接联络 Anki 培训师 Leo</a></h2>
+<div class="bottom_ads">
+  <!-- adsense autosize unit -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <!-- tools page ads -->
+  <ins class="adsbygoogle"
+    style="display:block"
+    data-ad-client="ca-pub-6251680727005039"
+    data-ad-slot="3618778328"
+    data-ad-format="auto"
+    data-full-width-responsive="true"></ins>
+  <script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+  <!-- end adsense autosize unit code -->
+</div>
+<!-- 在这里定义网页交互事件 --> 
+<script>
+(function() {
+  var markdown_box = document.getElementById('markdown');
+  var file_input = document.getElementById('file_input');
+  var anki_qna_box = document.getElementById('anki_qna');
+  var anki_csv_box = document.getElementById('anki_csv');
+  markdown_box.addEventListener('input', function() {
+    anki_qna_box.value = markdown2QA(markdown_box.value);
+    anki_csv_box.value = markdown2AnkiCSV(markdown_box.value);
+  });
+  file_input.addEventListener('change', readLocalFile, false);
+}());
+</script>
+</html>
