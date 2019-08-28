@@ -87,12 +87,13 @@ function OPML2JSON(opml) {
 // 把 JSON 对象转换为 Markdown 以便做后续处理
 function JSON2Markdown(json_obj) {
   var root_item = json_obj.opml.body.outline;
-  var markdown_str = convItemToMarkdownArrayByLevel(root_item, 10).join('\n');
+  console.log(root_item);
+  var markdown_str = convItemToMarkdownArrayByLevel(root_item, 6).join('\n');
   return markdown_str;
 }
 // 获取指定大纲条目的标题
 function getItemTitle(item){
-  if (item !== undefined) {
+  if (item !== 'undefined') {
     return item["_text"];
   }
   else {
@@ -101,7 +102,7 @@ function getItemTitle(item){
 }
 // 获取指定大纲条目的笔记
 function getItemNote(item){
-  if (item !== undefined) {
+  if (item !== 'undefined') {
     return decodeURI(item["__mubu_text"]);
   }
   else {
@@ -110,29 +111,29 @@ function getItemNote(item){
 }
 // 获取指定大纲条目的内部条目序列
 function getInsideItems(item){
-  if (item !== undefined && typeof(item["outline"]) !== undefined) {
-    return item["outline"];
-  }
-  else {
+  if (typeof(item) === 'undefined' || typeof(item["outline"]) === 'undefined') {
+    return [];
+  } else if (Array.isArray(item['outline'])) {
+    return item['outline'];
+  } else {
     return [];
   }
 }
 // 获取
 function convItemToMarkdownArrayByLevel(item, level) {
   var md_array = [];
-  sub_md_array = [];
-  if (item === undefined) {
+  var sub_md_array = [];
+  if (item === 'undefined') {
     return []; // 边界条件
   }
   else if (level < 0 || level > 50) {
-    node.error("level 数值超出范围（0-50）！");
+    console.log("level 数值超出范围（0-50）！");
     return [];
   } 
   else {
     md_array.push("# " + getItemTitle(item));
-    //md_array.push(getBoxNote(box));
     const sub_item_array = getInsideItems(item);
-    if (level === 0 || typeof(sub_item_array) === undefined) {
+    if (level === 0 || typeof(sub_item_array) === 'undefined') {
       sub_md_array = [];
     } 
     else {
@@ -144,7 +145,7 @@ function convItemToMarkdownArrayByLevel(item, level) {
     }
     md_array = md_array.concat(sub_md_array.map(
       function (str) { 
-        if (str !== undefined && str.startsWith('#')) {
+        if (str !== 'undefined' && str.startsWith('#')) {
           return "#" + str;
         }
         else {
