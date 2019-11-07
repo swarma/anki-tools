@@ -87,13 +87,12 @@ function OPML2JSON(opml) {
 // 把 JSON 对象转换为 Markdown 以便做后续处理
 function JSON2Markdown(json_obj) {
   var root_item = json_obj.opml.body.outline;
-  console.log(root_item);
-  var markdown_str = convItemToMarkdownArrayByLevel(root_item, 6).join('\n');
+  var markdown_str = convItemToMarkdownArrayByLevel(root_item, 12).join('\n');
   return markdown_str;
 }
 // 获取指定大纲条目的标题
 function getItemTitle(item){
-  if (item !== 'undefined') {
+  if (typeof(item) !== 'undefined') {
     return item["_text"];
   }
   else {
@@ -102,7 +101,7 @@ function getItemTitle(item){
 }
 // 获取指定大纲条目的笔记
 function getItemNote(item){
-  if (item !== 'undefined') {
+  if (typeof(item) !== 'undefined') {
     return decodeURI(item["__mubu_text"]);
   }
   else {
@@ -115,6 +114,8 @@ function getInsideItems(item){
     return [];
   } else if (Array.isArray(item['outline'])) {
     return item['outline'];
+  } else if ((item['outline']).constructor === Object) {
+    return [item['outline']];
   } else {
     return [];
   }
