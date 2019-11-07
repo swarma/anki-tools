@@ -11,7 +11,7 @@ function readLocalFile(e) {
   }
   var reader = new FileReader();
   reader.onload = function(e) {
-    var json_obj = OPML2JSON(e.target.result);
+    var json_obj = OPML2JSON(preProcess(e.target.result));
     var markdown_str = JSON2Markdown(json_obj);
     // Display file content
     displayContents(markdown_str);
@@ -21,6 +21,7 @@ function readLocalFile(e) {
 // 对多行文本内容做必要的预处理
 function preProcess(text) {
   var res_str = text;
+  res_str = regexReplG(res_str.trim(), '&nbsp;', ' ');
   res_str = regexReplG(res_str.trim(), '^[\r\n]+', '');
   res_str = regexReplG(res_str.trim(), '[\r\n]+$', '');
   res_str = regexReplG(res_str.trim(), '[\r\n]+', '\n');
