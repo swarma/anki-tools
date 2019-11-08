@@ -91,10 +91,23 @@ function JSON2Markdown(json_obj) {
   var markdown_str = convItemToMarkdownArrayByLevel(root_item, 12).join('\n');
   return markdown_str;
 }
+
+// 解析幕布专用图片格式
+function imgParse(text) {
+  unescaped_text = unescape(text);
+  res_str = regexReplG(unescaped_text.trim(), '.*:"(.+\.jpg)"\}\]', '!\[.\]\(https://mubu.com/$1\)');
+  return res_str;
+}
+
 // 获取指定大纲条目的标题
 function getItemTitle(item){
+  res_str = ''
   if (typeof(item) !== 'undefined') {
-    return item["_text"];
+    res_str = item["_text"];
+    if ('__images' in item) {
+      res_str += "<br><br>" + imgParse(item['__images']);
+    }
+    return res_str;
   }
   else {
     return "";
