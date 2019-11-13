@@ -104,19 +104,19 @@ function getItemTitle(item){
   res_str = ''
   if (typeof(item) !== 'undefined') {
     res_str = item["_text"];
-    if ('__images' in item) {
-      res_str += "<br><br>" + imgParse(item['__images']);
+    if ('__mubu_text' in item) {
+      res_str = decodeURI(item['__mubu_text']);
     }
-    return res_str;
+    if ('__images' in item) {
+      res_str += imgParse(item['__images']);
+    }
   }
-  else {
-    return "";
-  }
+  return res_str;
 }
 // 获取指定大纲条目的笔记
 function getItemNote(item){
-  if (typeof(item) !== 'undefined') {
-    return decodeURI(item["__mubu_text"]);
+  if (typeof(item) !== 'undefined' && '__note' in item) {
+    return item["__note"];
   }
   else {
     return "";
@@ -124,7 +124,7 @@ function getItemNote(item){
 }
 // 获取指定大纲条目的内部条目序列
 function getInsideItems(item){
-  if (typeof(item) === 'undefined' || typeof(item["outline"]) === 'undefined') {
+  if (typeof(item) === 'undefined' || typeof(item["outline"]) === 'undefined' || ('__complete' in item && item['__complete'] === 'true')) {
     return [];
   } else if (Array.isArray(item['outline'])) {
     return item['outline'];
@@ -138,7 +138,7 @@ function getInsideItems(item){
 function convItemToMarkdownArrayByLevel(item, level) {
   var md_array = [];
   var sub_md_array = [];
-  if (item === 'undefined') {
+  if (item === 'undefined' ||('__complete' in item && item['__complete'] === 'true')) {
     return []; // 边界条件
   }
   else if (level < 0 || level > 50) {
