@@ -3,6 +3,11 @@ function regexReplG(orig_str, regex_str, subst_str) {
   const regex = new RegExp(regex_str, 'g');
   return orig_str.replace(regex, subst_str);
 }
+
+function regexRepl(orig_str, regex_str, subst_str) {
+  const regex = new RegExp(regex_str);
+  return orig_str.replace(regex, subst_str);
+}
 // 读取本地文件内容
 function readLocalFile(e) {
   var file = e.target.files[0];
@@ -11,7 +16,9 @@ function readLocalFile(e) {
   }
   var reader = new FileReader();
   reader.onload = function(e) {
-    var json_obj = OPML2JSON(preProcess(e.target.result));
+    var opml_text = e.target.result;
+    var escaped_opml_text = opmlTextEscape(opml_text);
+    var json_obj = OPML2JSON(escaped_opml_text);
     var markdown_str = JSON2Markdown(json_obj);
     // Display file content
     displayContents(markdown_str);
@@ -26,6 +33,27 @@ function preProcess(text) {
   res_str = regexReplG(res_str.trim(), '[\r\n]+$', '');
   res_str = regexReplG(res_str.trim(), '[\r\n]+', '\n');
   return res_str;
+}
+function encodeHTML(text) {
+  var textarea = document.createElement("textarea");
+  textarea.textContent = text;
+  return textarea.innerHTML;
+}
+function decodeHTML(html) {
+  var textarea = document.createElement("textarea");
+  textarea.innerHTML = html;
+  return textarea.value;
+}
+function opmlTextEscape(opml_text) {
+  const regex = '<outline text="([^"]+)"';
+  var res = opml_text.match(regex);
+  while(res) {
+    subst = encodeHTML(res[1]);
+    opml_text = regexRepl(opml_text.trim(), regex, '<outline pimgeek_text="' + subst + '"');
+    res = opml_text.match(regex);
+  }
+  opml_text = regexReplG(opml_text, '<outline pimgeek_text=', '<outline text=');
+  return opml_text;
 }
 // 网页文本下载
 function download(filename, text) {
@@ -103,9 +131,9 @@ function imgParse(text) {
 function getItemTitle(item){
   res_str = ''
   if (typeof(item) !== 'undefined') {
-    res_str = item["_text"];
+    res_str = decodeHTML(item["_text"]);
     if ('__mubu_text' in item) {
-      res_str = decodeURI(item['__mubu_text']);
+      res_str = decodeHTML(decodeURI(item['__mubu_text']));
     }
     if ('__images' in item) {
       res_str += imgParse(item['__images']);
