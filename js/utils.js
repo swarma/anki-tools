@@ -44,6 +44,11 @@ function decodeHTML(html) {
   textarea.innerHTML = html;
   return textarea.value;
 }
+function remove_html_link_tag(text) {
+  var res_str = text;
+  res_str = regexReplG(res_str.trim(), '<a class="content-link"[^>]+>([^<]+)</a>', '$1');
+  return res_str;
+}
 function opmlTextEscape(opml_text) {
   const regex = '<outline text="([^"]+)"';
   var res = opml_text.match(regex);
@@ -133,7 +138,7 @@ function getItemTitle(item){
   if (typeof(item) !== 'undefined') {
     res_str = decodeHTML(item["_text"]);
     if ('__mubu_text' in item) {
-      res_str = decodeHTML(decodeURI(item['__mubu_text']));
+      res_str = remove_html_link_tag(decodeHTML(decodeURI(item['__mubu_text'])));
     }
     if ('__images' in item) {
       res_str += imgParse(item['__images']);
