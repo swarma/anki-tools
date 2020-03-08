@@ -417,6 +417,7 @@ margin-top : 5px;
     anki_qna_box.value = markdown2QA(markdown_box.value);
     anki_csv_box.value = markdown2AnkiCSV(markdown_box.value);
   });
+  file_input.textarea_id = 'markdown';
   file_input.addEventListener('change', readLocalFile, false);
 }());
 </script>
