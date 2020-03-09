@@ -85,23 +85,47 @@ function opmlTextEscape(opml_text) {
   opml_text = regexReplG(opml_text, '<outline pimgeek_text=', '<outline text=');
   return opml_text;
 }
-// 把用户输入的原始文本转换为 LeveledObj 对象以便做后续处理
-function text2LeveledObj(text) {
-  var clean_text = preProcess(text);
-  var lines = clean_text.split("\n");  
-  var outline = [];
-  const level_regex = new RegExp('#+');
+// 获取单行 Markdown 文本的标题和级别
+function getTitleAndLevel(markdown_line) {
+	const level_regex = new RegExp("^#+");
+	var matches = level_regex.exec(markdown_line);
+	var level = matches[0].length;
+	var title = markdown_line.replace(matches[0], '').trim();
+	return title_n_level = { 'title': title, 'level': level };
+}
+// 检测是否存在子节点与父节点重名的情况
+function detectDuplicateLevels(markdown_lines) {
+  var clean_markdown_lines = preProcess(markdown_lines);
+  var lines = clean_markdown_lines.split("\n");  
+  var level_obj_array = [];
+  var title_obj_array = [];
   for (var idx in lines) {
-    var results = level_regex.exec(lines[idx]);
-    var level = results[0].length;
-    var title = lines[idx].replace(results[0], '').trim();
-    var parent_idx = findParent(outline, level);
-    if (parent_idx !== -1) {
-        outline[parent_idx].children.push(title);
+    var title_n_level = getTitleAndLevel(lines[idx]);
+    level_obj_array.push(title_n_level.level);
+    title_obj_array.push(title_n_level.title);
+    title_obj_set = new Set(title_obj_array);
+    if (title_obj_set.size < title_obj_array.length) {
+      return [title_n_level.title];
     }
-    outline[idx] = { 'level': level, 'title': title, 'children': [] };
   }
-  return outline;
+  return [];
+}
+// 把 Markdown 标题序列转换为 LeveledObj 对象以便做后续处理
+function text2LeveledObj(markdown_lines) {
+  var clean_markdown_lines = preProcess(markdown_lines);
+  var lines = clean_markdown_lines.split("\n");  
+  var leveled_obj = [];
+  for (var idx in lines) {
+    var title_n_level = getTitleAndLevel(lines[idx]);
+    var title = title_n_level.title;
+    var level = title_n_level.level;
+    var parent_idx = findParent(leveled_obj, level);
+    if (parent_idx !== -1) {
+        leveled_obj[parent_idx].children.push(title);
+    }
+    leveled_obj[idx] = { 'level': level, 'title': title, 'children': [] };
+  }
+  return leveled_obj;
 }
 // 把 OPML 字符串转换为 JSON 对象以便做后续处理
 function OPML2JSON(opml) {
@@ -259,6 +283,11 @@ function getAnkiChapterInfo(item, xpath) {
 // 把用户输入的 Markdown 文本转换为 Anki Q&A 格式
 function markdown2QA(markdown_text) {
   var qa_text = "";
+  var result = detectDuplicateLevels(markdown_text);
+  if (result.length > 0) {
+    return "存在重复的节点标题，请修正后再提交 ^_^;;\n\n【" + result[0] + "】";
+  }
+  
   var outline = text2LeveledObj(markdown_text);
   
   for (var item of outline) {
@@ -288,7 +317,12 @@ function postProcess(input_str) {
 }
 // 把用户输入的 Markdown 文本转换为 AnkiCSV 导入格式
 function markdown2AnkiCSV(markdown_text) {
-  var anki_csv = "";
+  var anki_csv = "";  
+  var result = detectDuplicateLevels(markdown_text);
+  if (result.length > 0) {
+    return "存在重复的节点标题，请修正后再提交 ^_^;;\n\n【" + result[0] + "】";
+  }
+  
   var outline = text2LeveledObj(markdown_text);
   
   for (var item of outline) {
