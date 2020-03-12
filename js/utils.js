@@ -89,9 +89,13 @@ function opmlTextEscape(opml_text) {
 function getTitleAndLevel(markdown_line) {
 	const level_regex = new RegExp("^#+");
 	var matches = level_regex.exec(markdown_line);
-	var level = matches[0].length;
-	var title = markdown_line.replace(matches[0], '').trim();
-	return title_n_level = { 'title': title, 'level': level };
+  if (matches) {
+	  var level = matches[0].length;
+	  var title = markdown_line.replace(matches[0], '').trim();
+	  return { 'title': title, 'level': level };
+  } else {
+    return { 'title': markdown_line, 'level': 0 };
+  }
 }
 // 检测是否存在子节点与父节点重名的情况
 function detectDuplicateLevels(markdown_lines) {

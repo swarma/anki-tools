@@ -400,6 +400,11 @@ margin-top : 5px;
     <input type="file" id="file_input" />
   </div>
   <div class="output_body">
+    <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.9.2.css">
+    <div id="qunit"></div>
+    <div id="qunit-fixture"></div>
+    <script src="https://code.jquery.com/qunit/qunit-2.9.2.js"></script>
+    <script src="../test/function-check.js"></script>
     <textarea id="anki_qna" class="output_qna" ></textarea>
     <textarea id="anki_csv" class="output_anki" ></textarea>
     <button class="save_button" onclick='download("anki.csv",document.getElementById("anki_csv").value)'>保存为 anki.csv</button>
