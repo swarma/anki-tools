@@ -146,7 +146,7 @@ function JSON2Markdown(json_obj) {
 // 解析幕布专用图片格式
 function imgParse(text) {
   unescaped_text = unescape(text);
-  res_str = regexReplG(unescaped_text.trim(), '.*:"(.+\.jpg)"\}\]', '!\[.\]\(https://mubu.com/$1\)');
+  res_str = regexReplG(unescaped_text.trim(), '.*:"(.+\.jpg)"\}\]', '!\[.\]\(https://api2.mubu.com/v3/$1\)');
   return res_str;
 }
 // 获取指定大纲条目的标题
@@ -159,6 +159,9 @@ function getItemTitle(item){
     }
     if ('__images' in item) {
       res_str += imgParse(item['__images']);
+    }
+    if ('__transno_images' in item) {
+      res_str += imgParse(item['__transno_images']);
     }
   }
   return res_str;
@@ -287,10 +290,10 @@ function getAnkiChapterInfo(item, xpath) {
 // 把用户输入的 Markdown 文本转换为 Anki Q&A 格式
 function markdown2QA(markdown_text) {
   var qa_text = "";
-  var result = detectDuplicateLevels(markdown_text);
-  if (result.length > 0) {
-    return "存在重复的节点标题，请修正后再提交 ^_^;;\n\n【" + result[0] + "】";
-  }
+  //var result = detectDuplicateLevels(markdown_text);
+  //if (result.length > 0) {
+  //  return "存在重复的节点标题，请修正后再提交 ^_^;;\n\n【" + result[0] + "】";
+  //}
   
   var outline = text2LeveledObj(markdown_text);
   
@@ -322,10 +325,10 @@ function postProcess(input_str) {
 // 把用户输入的 Markdown 文本转换为 AnkiCSV 导入格式
 function markdown2AnkiCSV(markdown_text) {
   var anki_csv = "";  
-  var result = detectDuplicateLevels(markdown_text);
-  if (result.length > 0) {
-    return "存在重复的节点标题，请修正后再提交 ^_^;;\n\n【" + result[0] + "】";
-  }
+  //var result = detectDuplicateLevels(markdown_text);
+  //if (result.length > 0) {
+  // return "存在重复的节点标题，请修正后再提交 ^_^;;\n\n【" + result[0] + "】";
+  //}
   
   var outline = text2LeveledObj(markdown_text);
   
