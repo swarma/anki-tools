@@ -146,7 +146,7 @@ function JSON2Markdown(json_obj) {
 // 解析幕布专用图片格式
 function imgParse(text) {
   unescaped_text = unescape(text);
-  res_str = regexReplG(unescaped_text.trim(), '.*:"(.+\.jpg)"\}\]', '!\[.\]\(https://api2.mubu.com/v3/$1\)');
+  res_str = regexReplG(unescaped_text.trim(), '.*:"(.+\.jpg)".+$', '!\[.\]\(https://mubu.com/$1\)');
   return res_str;
 }
 // 获取指定大纲条目的标题
@@ -327,7 +327,7 @@ function markdown2AnkiCSV(markdown_text) {
   var anki_csv = "";  
   //var result = detectDuplicateLevels(markdown_text);
   //if (result.length > 0) {
-  // return "存在重复的节点标题，请修正后再提交 ^_^;;\n\n【" + result[0] + "】";
+  //  return "存在重复的节点标题，请修正后再提交 ^_^;;\n\n【" + result[0] + "】";
   //}
   
   var outline = text2LeveledObj(markdown_text);
