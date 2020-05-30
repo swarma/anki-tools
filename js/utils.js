@@ -154,7 +154,8 @@ function getItemTitle(item){
   res_str = ''
   if (typeof(item) !== 'undefined') {
     res_str = decodeHTML(item["_text"]);
-    if ('__mubu_text' in item) {
+    is_md = res_str.search(/!\[[^\]]*\]\([^\)]*\)/g);
+    if ('__mubu_text' in item && is_md == -1) {
       res_str = remove_html_link_tag(decodeHTML(decodeURI(item['__mubu_text'])));
     }
     if ('__images' in item) {
@@ -290,10 +291,10 @@ function getAnkiChapterInfo(item, xpath) {
 // 把用户输入的 Markdown 文本转换为 Anki Q&A 格式
 function markdown2QA(markdown_text) {
   var qa_text = "";
-  //var result = detectDuplicateLevels(markdown_text);
-  //if (result.length > 0) {
-  //  return "存在重复的节点标题，请修正后再提交 ^_^;;\n\n【" + result[0] + "】";
-  //}
+  //  var result = detectDuplicateLevels(markdown_text);
+  //  if (result.length > 0) {
+  //    return "存在重复的节点标题，请修正后再提交 ^_^;;\n\n【" + result[0] + "】";
+  //  }
   
   var outline = text2LeveledObj(markdown_text);
   
@@ -325,10 +326,10 @@ function postProcess(input_str) {
 // 把用户输入的 Markdown 文本转换为 AnkiCSV 导入格式
 function markdown2AnkiCSV(markdown_text) {
   var anki_csv = "";  
-  //var result = detectDuplicateLevels(markdown_text);
-  //if (result.length > 0) {
-  //  return "存在重复的节点标题，请修正后再提交 ^_^;;\n\n【" + result[0] + "】";
-  //}
+  //  var result = detectDuplicateLevels(markdown_text);
+  //  if (result.length > 0) {
+  //    return "存在重复的节点标题，请修正后再提交 ^_^;;\n\n【" + result[0] + "】";
+  //  }
   
   var outline = text2LeveledObj(markdown_text);
   
