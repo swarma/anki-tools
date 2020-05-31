@@ -97,37 +97,20 @@ function getTitleAndLevel(markdown_line) {
     return { 'title': markdown_line, 'level': 0 };
   }
 }
-// 检测是否存在子节点与父节点重名的情况
-function detectDuplicateLevels(markdown_lines) {
-  var clean_markdown_lines = preProcess(markdown_lines);
-  var lines = clean_markdown_lines.split("\n");  
-  var level_obj_array = [];
-  var title_obj_array = [];
-  for (var idx in lines) {
-    var title_n_level = getTitleAndLevel(lines[idx]);
-    level_obj_array.push(title_n_level.level);
-    title_obj_array.push(title_n_level.title);
-    title_obj_set = new Set(title_obj_array);
-    if (title_obj_set.size < title_obj_array.length) {
-      return [title_n_level.title];
-    }
-  }
-  return [];
-}
 // 把 Markdown 标题序列转换为 LeveledObj 对象以便做后续处理
 function text2LeveledObj(markdown_lines) {
   var clean_markdown_lines = preProcess(markdown_lines);
   var lines = clean_markdown_lines.split("\n");  
   var leveled_obj = [];
-  for (var idx in lines) {
-    var title_n_level = getTitleAndLevel(lines[idx]);
+  for (var line_id in lines) {
+    var title_n_level = getTitleAndLevel(lines[line_id]);
     var title = title_n_level.title;
     var level = title_n_level.level;
-    var parent_idx = findParent(leveled_obj, level);
-    if (parent_idx !== -1) {
-        leveled_obj[parent_idx].children.push(title);
+    leveled_obj[line_id] = { 'line_id': line_id, 'title': title, 'level': level, 'children': [] };
+    var parent_line_id = findParent(leveled_obj, line_id);
+    if (parent_line_id !== -1) {
+        leveled_obj[parent_line_id].children.push(line_id);
     }
-    leveled_obj[idx] = { 'level': level, 'title': title, 'children': [] };
   }
   return leveled_obj;
 }
@@ -165,6 +148,7 @@ function getItemTitle(item){
       res_str += imgParse(item['__transno_images']);
     }
   }
+  res_str = regexReplG(res_str, '^<span>(.+)<\/span>$', '$1');
   return res_str;
 }
 // 获取指定大纲条目的笔记
@@ -228,55 +212,62 @@ function convItemToMarkdownArrayByLevel(item, level) {
 function markdown2HTML(input_str) {
   let output_str = "";
   output_str = regexReplG(input_str, '\\*{2}([^\*]+)\\*{2}', '<b>$1</b>');
+  output_str = regexReplG(output_str, '^<span>(.+)<\/span>$', '$1');
   output_str = regexReplG(output_str, '\\*([^\*]+)\\*', '<span style="background-color:wheat;">$1</span>');
   output_str = regexReplG(output_str, '\\!\\[[^\[]*\\]\\(([^\(\)]*)\\)', '<img src="$1">');
   return output_str;
 }
-// 从给定的 LeveledObj 中识别某节点的直接父节点
-// 并返回该父节点的名称
-function getParentTitle(leveled_obj, child_title) {
-  let parent_title = "";
-  for (let item of leveled_obj) {
-    if (item.hasOwnProperty('children') && 
-      item.children.indexOf(child_title) >= 0) {
-      parent_title = item.title;
-      break;
-    }
+// 从给定的 LeveledObj 中获取某行的大纲标题
+function getLineTitle(leveled_obj, line_id) {
+  let line_title = "";
+  if (line_id < leveled_obj.length) {
+    line_title = leveled_obj[line_id].title;
   }
-  return parent_title;
+  return line_title;
 }
+
 // 从给定的 LeveledObj 中查找某级别的上级节点
 // 并返回其节点 id
 // (注意是按照从下往上的顺序查找, 找到第一个就停止寻找)
-function findParent(leveled_obj, child_level) {
-  let parent_idx = -1;
-  for (let idx = leveled_obj.length - 1; idx >= 0; idx--) {
-    if (leveled_obj[idx].level == child_level - 1) {
-      parent_idx = idx;
+function findParent(leveled_obj, child_line_id) {
+  let parent_line_id = -1;
+  let child = leveled_obj[child_line_id];
+  for (let line_id = leveled_obj.length - 1; line_id >= 0; line_id--) {
+    if (typeof(child) != "undefined" && leveled_obj[line_id].level == child.level - 1) {
+      parent_line_id = line_id;
       break;
     }
   }
-  return parent_idx;
+  return parent_line_id;
 }
 // 从大纲中抽取章节信息
 // --------
 // 获取某项内容在给定的 Outline 中的 XPath
 // 形如 标题1-标题1.1-标题1.1.1
-function getXPathInOutline(outline, item) {
+function getXPathInOutline(leveled_obj, item) {
   var xpath = [];
-  var parent_title = getParentTitle(outline, item.title);
-  while (parent_title.length != 0) {
+  var parent_title = "";
+  var parent_line_id = findParent(leveled_obj, item.line_id);
+  if (parent_line_id != -1) {
+    parent_title = leveled_obj[parent_line_id].title;
+  }
+  while (parent_line_id > 0) {
     xpath.unshift(markdown2HTML(parent_title));
-    parent_title = getParentTitle(outline, parent_title);
+    parent_line_id = findParent(leveled_obj, parent_line_id);
+    if (parent_line_id != -1) {
+      parent_title = leveled_obj[parent_line_id].title;
+    }
   }
   return xpath.join('-');
 }
+
 function getNthLevelXPath(xpath, num) {
   var nth_level_xpath = "";
   var tmp_list = xpath.split('-').slice(0, num);
   nth_level_xpath = tmp_list.join('-');
   return nth_level_xpath;
 }
+
 function getAnkiChapterInfo(item, xpath) {
   var anki_chap_info = "";
   if (item.level == 1) {
@@ -291,23 +282,18 @@ function getAnkiChapterInfo(item, xpath) {
 // 把用户输入的 Markdown 文本转换为 Anki Q&A 格式
 function markdown2QA(markdown_text) {
   var qa_text = "";
-  //  var result = detectDuplicateLevels(markdown_text);
-  //  if (result.length > 0) {
-  //    return "存在重复的节点标题，请修正后再提交 ^_^;;\n\n【" + result[0] + "】";
-  //  }
+  var leveled_obj = text2LeveledObj(markdown_text);
   
-  var outline = text2LeveledObj(markdown_text);
-  
-  for (var item of outline) {
-    var xpath = getXPathInOutline(outline, item);
+  for (var item of leveled_obj) {
+    var xpath = getXPathInOutline(leveled_obj, item);
     if (item.children.length > 0) {
       qa_text += '-----\n\n问题：' + item.title + '\n\n' +
         getAnkiChapterInfo(item, xpath) + '\n\n答案：';
-      for (var child_idx in item.children) {
-        if (child_idx == item.children.length - 1) {
-          qa_text += item.children[child_idx] + '\n\n';
+      for (var child_line_id in item.children) {
+        if (child_line_id == item.children.length - 1) {
+          qa_text += getLineTitle(leveled_obj, item.children[child_line_id]) + '\n\n';
         } else {
-          qa_text += item.children[child_idx] + '、';
+          qa_text += getLineTitle(leveled_obj, item.children[child_line_id]) + '、';
         }
       }
     }
@@ -326,24 +312,19 @@ function postProcess(input_str) {
 // 把用户输入的 Markdown 文本转换为 AnkiCSV 导入格式
 function markdown2AnkiCSV(markdown_text) {
   var anki_csv = "";  
-  //  var result = detectDuplicateLevels(markdown_text);
-  //  if (result.length > 0) {
-  //    return "存在重复的节点标题，请修正后再提交 ^_^;;\n\n【" + result[0] + "】";
-  //  }
+  var leveled_obj = text2LeveledObj(markdown_text);
   
-  var outline = text2LeveledObj(markdown_text);
-  
-  for (var item of outline) {
-    let xpath = getXPathInOutline(outline, item);
+  for (var item of leveled_obj) {
+    let xpath = getXPathInOutline(leveled_obj, item);
     if (item.children.length > 0) {
       anki_csv += markdown2HTML(item.title) + '\t' + 
         markdown2HTML(getAnkiChapterInfo(item, xpath)) + '\t';
-      for (var child_idx in item.children) {
-        if (child_idx == item.children.length - 1) {
-          var tmp_str = markdown2HTML(item.children[child_idx]);
+      for (var child_line_id in item.children) {
+        if (child_line_id == item.children.length - 1) {
+          var tmp_str = markdown2HTML(getLineTitle(leveled_obj, item.children[child_line_id]));
           anki_csv +=  tmp_str + '。\n';
         } else {
-          var tmp_str = markdown2HTML(item.children[child_idx]);
+          var tmp_str = markdown2HTML(getLineTitle(leveled_obj, item.children[child_line_id]));
           anki_csv +=  tmp_str + '；<br>';
         }
         anki_csv = postProcess(anki_csv);
