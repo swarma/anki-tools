@@ -55,6 +55,17 @@ function preProcess(text) {
   res_str = regexReplG(res_str.trim(), '[\r\n]+', '\n');
   return res_str;
 }
+function roamPreProcess(text) {
+  let lines = preProcess(text).split("\n");
+  let regex = /^( *)-/i;
+  for (idx in lines) {
+    let res = regex.exec(lines[idx]);
+    spaces = res[1];
+    tabs = spaces.length / 4 + 1;
+    lines[idx] = lines[idx].replace(res[0], "#".repeat(tabs));
+  }
+  return lines.join("\n");
+}
 // 对文本内容中的 > < 等符号做编码处理
 function encodeHTML(text) {
   var textarea = document.createElement("textarea");
@@ -100,6 +111,9 @@ function getTitleAndLevel(markdown_line) {
 // 把 Markdown 标题序列转换为 LeveledObj 对象以便做后续处理
 function text2LeveledObj(markdown_lines) {
   var clean_markdown_lines = preProcess(markdown_lines);
+  if (clean_markdown_lines.startsWith("-")) {
+    clean_markdown_lines = roamPreProcess(clean_markdown_lines);
+  }
   var lines = clean_markdown_lines.split("\n");  
   var leveled_obj = [];
   for (var line_id in lines) {
@@ -140,12 +154,6 @@ function getItemTitle(item){
     is_md = res_str.search(/!\[[^\]]*\]\([^\)]*\)/g);
     if ('__mubu_text' in item && is_md == -1) {
       res_str = remove_html_link_tag(decodeHTML(decodeURI(item['__mubu_text'])));
-    }
-    if ('__images' in item) {
-      res_str += imgParse(item['__images']);
-    }
-    if ('__transno_images' in item) {
-      res_str += imgParse(item['__transno_images']);
     }
   }
   res_str = regexReplG(res_str, '^<span>(.+)<\/span>$', '$1');
@@ -232,7 +240,7 @@ function getLineTitle(leveled_obj, line_id) {
 function findParent(leveled_obj, child_line_id) {
   let parent_line_id = -1;
   let child = leveled_obj[child_line_id];
-  for (let line_id = leveled_obj.length - 1; line_id >= 0; line_id--) {
+  for (let line_id = child_line_id - 1; line_id >= 0; line_id--) {
     if (typeof(child) != "undefined" && leveled_obj[line_id].level == child.level - 1) {
       parent_line_id = line_id;
       break;
@@ -247,18 +255,28 @@ function findParent(leveled_obj, child_line_id) {
 function getXPathInOutline(leveled_obj, item) {
   var xpath = [];
   var parent_title = "";
-  var parent_line_id = findParent(leveled_obj, item.line_id);
-  if (parent_line_id != -1) {
-    parent_title = leveled_obj[parent_line_id].title;
-  }
-  while (parent_line_id > 0) {
-    xpath.unshift(markdown2HTML(parent_title));
-    parent_line_id = findParent(leveled_obj, parent_line_id);
+  if (item.level == 1) {
+    return "";
+  } else if (item.level == 2) {
+    var parent_line_id = findParent(leveled_obj, item.line_id);
+    if (parent_line_id != -1) {
+      parent_title = leveled_obj[parent_line_id].title;
+      return markdown2HTML(parent_title);
+    }
+  } else if (item.level >= 3) {
+    var parent_line_id = findParent(leveled_obj, item.line_id);
     if (parent_line_id != -1) {
       parent_title = leveled_obj[parent_line_id].title;
     }
+    while (parent_line_id >= 0) {
+      xpath.unshift(markdown2HTML(parent_title));
+      parent_line_id = findParent(leveled_obj, parent_line_id);
+      if (parent_line_id != -1) {
+        parent_title = leveled_obj[parent_line_id].title;
+      }
+    }
+    return xpath.join('-');
   }
-  return xpath.join('-');
 }
 
 function getNthLevelXPath(xpath, num) {
