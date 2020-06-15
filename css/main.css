@@ -1,0 +1,19 @@
+html,body { margin:0; color:white; background-color:black; height:96%; }
+textarea { color: white; background-color: #555555; }
+.flex-container { display: flex; height: 80%; flex-wrap: nowrap; background-color: black; }
+.bottom-ads { background-color: black; margin-top: 15px; margin-left: 31.4%; margin-right: 1%; }
+.usage-pane { width: 30%; margin: 5px; padding: 10px; font-size: large; }
+.usage-pane > img { margin-left:10px; display: block; max-width:98%; }
+.usage-pane > h1 { text-align:center; color: orange; font-size: xx-large; }
+.usage-pane > h2 { text-align:center; color: snow; font-size: large; line-height:150%; margin-bottom: 20px; }
+.usage-pane > h3 { color: orange; font-size: large; margin-left: 10px; }
+.usage-pane > h4 { color: snow; text-align: center; font-size: medium; margin-left: 10px; }
+.usage-pane > p { color: snow; font-size: medium; margin-left: 10px; }
+.usage-pane > pre { white-space: pre-wrap; white-space: -moz-pre-wrap; white-space: -pre-wrap; white-space: -o-pre-wrap;
+	word-wrap: break-word; font-family: monospaced; font-size: small;
+	margin-left: 10px; padding: 15px 10px 15px 10px; background-color:#222222; }
+.input-pane { width:35%; height: 100%; display: flex; flex-direction: column; flex-wrap: nowrap; }
+.output-pane { width:35%; height: 100%; display: flex; flex-direction: column; flex-wrap: nowrap; }
+.input-pane > textarea { display:table-row; margin-top:15px; width:96%; height:98%; }
+.output-pane > textarea { display:table-row; margin-top:15px; width:94%; height:43%; }
+.output-pane > button { width: 95%; margin-top:15px; }
