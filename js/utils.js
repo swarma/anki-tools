@@ -338,6 +338,7 @@ function postProcess(input_str) {
   let output_str = "";
   output_str = regexReplG(input_str, '<img src="([^"]+)">(。|；)', '<img src="$1">');
   output_str = regexReplG(output_str, '<li>(<img[^<>]+>)<\/li>', '$1');
+  output_str = regexReplG(output_str, '<ol>(.*<img[^<>]+>.*)<\/ol>', '<ol style="list-style:none;">$1</ol>');
   output_str = regexReplG(output_str, '？(。|；)', '？');
   output_str = regexReplG(output_str, '；；', '；');
   output_str = regexReplG(output_str, '。。', '。');
