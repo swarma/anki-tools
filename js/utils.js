@@ -162,7 +162,7 @@ function getItemTitle(item){
       res_str += imgParse(item['__transno_images']);
     }
   }
-  res_str = regexReplG(res_str, '^<span>(.+)<\/span>$', '$1');
+  res_str = regexReplG(res_str, '^<span>([^<]*)<\/span>$', '$1');
   return res_str;
 }
 // 获取指定大纲条目的笔记
@@ -226,12 +226,12 @@ function convItemToMarkdownArrayByLevel(item, level) {
 function markdown2HTML(input_str) {
   let output_str = "";
   output_str = regexReplG(input_str, '\\[\\[([^\\]]+)\\]\\]', '<span class="page">$1</span>');
-  output_str = regexReplG(output_str, '^<span>(.+)<\/span>$', '$1');
   output_str = regexReplG(output_str, '\\*{2}([^\\*]+)\\*{2}', '<span class="bold">$1</span>');
   output_str = regexReplG(output_str, '_{2}([^_]+)_{2}', '<span class="italics">$1</span>');
   output_str = regexReplG(output_str, '\\^{2}([^\\^]+)\\^{2}', '<span class="highlight">$1</span>');
   output_str = regexReplG(output_str, '\\*([^\\*]+)\\*', '<span style="background-color:wheat;">$1</span>');
   output_str = regexReplG(output_str, '\\!\\[[^\\[]*\\]\\(([^\(\)]*)\\)', '<img src="$1">');
+  output_str = regexReplG(output_str, '<span>([^<]*)<\/span>', '$1');
   return output_str;
 }
 // 从给定的 LeveledObj 中获取某行的大纲标题
