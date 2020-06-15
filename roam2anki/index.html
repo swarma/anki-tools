@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="author" content="pimgeek">
+    <meta name="description" content="引思网自行开发的小工具,Roam Research 笔记转换为 Anki 可导入的 CSV 文件 (学习骇客学员专用)">
+    <meta name="keywords" content="引思网,在线转换工具,roam-research,anki,csv,导入,学习骇客">
+    <title>Roam Research 笔记在线转换为 Anki 可导入的 CSV 格式 | 在线格式转换工具 | 引思网</title>
+    <link rel="stylesheet" href="../css/main.css" media="all" />
+    <script src="../js/utils.js"></script>
+    <script src="../lib/xml2json.min.js"></script>
+  </head>
+  <body>
+    <div class="flex-container">
+      <div class="usage-pane">
+        <h1>Roam to Anki</h1>
+        <h2>把 Roam Research 笔记转换为 Anki 卡片</h2>
+        <h3>使用说明</h3>
+        <p>在左侧输入 Roam 笔记, 在右侧获取 Anki CSV</p>
+        <h3>示例输入（Markdown）</h3>
+        <pre>
+- 人际沟通入门
+    - 我们为什么要沟通？
+        - 生理需求
+            - 有什么例子可以说明**沟通**在生理需求方面的作用？
+                - 从越南战俘创造密码的例子可以看到，人际沟通对健康是不可或缺的
+                - ![mark](http://pic.com/1.png)
+        - 认同需求
+            - 我们对自我的认同，^^来源^^于哪里？</pre>
+        <h3>示例输出（CSV）</h3>
+        <pre>
+人际沟通入门	《人际沟通入门》	我们为什么要沟通？
+我们为什么要沟通？	《人际沟通入门-我们为什么要沟通？》	生理需求；&lt;br&gt;认同需求。
+生理需求	《人际沟通入门-我们为什么要沟通？》	有什么例子可以说明&lt;span class="bold"&gt;沟通&lt;/span&gt;在生理需求方面的作用？
+有什么例子可以说明&lt;span class="bold"&gt;沟通&lt;/span&gt;在生理需求方面的作用？	《人际沟通入门-我们为什么要沟通？-生理需求》	从越南战俘创造密码的例子可以看到，人际沟通对健康是不可或缺的；&lt;br&gt;&lt;img src="http://pic.com/1.png"&gt;
+认同需求	《人际沟通入门-我们为什么要沟通？》	我们对自我的认同，&lt;span class="highlight"&gt;来源&lt;/span&gt;于哪里？</pre>
+        <h2>如有改进建议，请联系 LEO 老师<br><a href="https://anki.wiki/"><img class="leo-logo" src="https://anki.wiki/images/avatar.jpg" />学习骇客</a></h2>
+      </div>
+      <div class="input-pane">
+        <textarea id="markdown" class="markdown_input" ></textarea>
+      </div>
+      <div class="output-pane">
+          <textarea id="anki_qna" class="output_qna" ></textarea>
+          <textarea id="anki_csv" class="output_anki" ></textarea>
+          <button class="save_button" onclick='download("anki.csv",document.getElementById("anki_csv").value)'>保存为 anki.csv</button>
+      </div>
+      <!-- 在这里定义网页交互事件 --> 
+      <script>
+      (function() {
+        var markdown_box = document.getElementById('markdown');
+        var anki_qna_box = document.getElementById('anki_qna');
+        var anki_csv_box = document.getElementById('anki_csv');
+        markdown_box.addEventListener('input', function() {
+          anki_qna_box.value = markdown2QA(markdown_box.value);
+          anki_csv_box.value = markdown2AnkiCSV(markdown_box.value);
+        });
+      }());
+      </script>
+    </div>
+    <div class="bottom-ads">
+    </div>
+  </body>
+</html>
