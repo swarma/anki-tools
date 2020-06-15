@@ -226,7 +226,7 @@ function markdown2HTML(input_str) {
   let output_str = "";
   output_str = regexReplG(input_str, '\\[\\[([^\\]]+)\\]\\]', '<span class="page">$1</span>');
   output_str = regexReplG(output_str, '\\*{2}([^\\*]+)\\*{2}', '<span class="bold">$1</span>');
-  output_str = regexReplG(output_str, '_{2}([^_]+)_{2}', '<span class="italics">$1</span>');
+  output_str = regexReplG(output_str, '_{2}([^_]+)_{2}', '<span class="italic">$1</span>');
   output_str = regexReplG(output_str, '\\^{2}([^\\^]+)\\^{2}', '<span class="highlight">$1</span>');
   output_str = regexReplG(output_str, '\\*([^\\*]+)\\*', '<span style="background-color:wheat;">$1</span>');
   output_str = regexReplG(output_str, '\\!\\[[^\\[]*\\]\\(([^\(\)]*)\\)', '<img src="$1" />');
@@ -270,7 +270,7 @@ function getXPathInOutline(leveled_obj, item) {
     var parent_line_id = findParent(leveled_obj, item.line_id);
     if (parent_line_id != -1) {
       parent_title = leveled_obj[parent_line_id].title;
-      return markdown2HTML(parent_title);
+      return html2text(markdown2HTML(parent_title));
     }
   } else if (item.level >= 3) {
     var parent_line_id = findParent(leveled_obj, item.line_id);
@@ -278,7 +278,7 @@ function getXPathInOutline(leveled_obj, item) {
       parent_title = leveled_obj[parent_line_id].title;
     }
     while (parent_line_id >= 0) {
-      xpath.unshift(markdown2HTML(parent_title));
+      xpath.unshift(html2text(markdown2HTML(parent_title)));
       parent_line_id = findParent(leveled_obj, parent_line_id);
       if (parent_line_id != -1) {
         parent_title = leveled_obj[parent_line_id].title;
@@ -298,13 +298,19 @@ function getNthLevelXPath(xpath, num) {
 function getAnkiChapterInfo(item, xpath) {
   var anki_chap_info = "";
   if (item.level == 1) {
-    anki_chap_info = '《' + markdown2HTML(item.title) + '》';
+    anki_chap_info = '《' + html2text(markdown2HTML(item.title)) + '》';
   }	else if (item.level == 2) {
-    anki_chap_info = '《' + xpath + '-' + markdown2HTML(item.title) + '》';
+    anki_chap_info = '《' + xpath + '-' + html2text(markdown2HTML(item.title)) + '》';
   } else {
     anki_chap_info = '《' + getNthLevelXPath(xpath, 3) + '》';
   }
   return anki_chap_info;
+}
+
+function html2text(html) {
+  var text = "";
+  text = html.replace(/<[^>]+>/ig, '');
+  return text;
 }
 // 把用户输入的 Markdown 文本转换为 Anki Q&A 格式
 function markdown2QA(markdown_text) {
@@ -355,11 +361,11 @@ function markdown2AnkiCSV(markdown_text) {
       for (var child_line_id in item.children) {
         if (child_line_id == 0) {
           var tmp_str = markdown2HTML(getLineTitle(leveled_obj, item.children[child_line_id]));
-          anki_csv +=  '<ul><li>' + tmp_str + '</li>';
+          anki_csv +=  '<ol><li>' + tmp_str + '</li>';
         }
         else if (child_line_id == item.children.length - 1) {
           var tmp_str = markdown2HTML(getLineTitle(leveled_obj, item.children[child_line_id]));
-          anki_csv += '<li>' + tmp_str + '</li></ul>\n';
+          anki_csv += '<li>' + tmp_str + '</li></ol>\n';
         } else {
           var tmp_str = markdown2HTML(getLineTitle(leveled_obj, item.children[child_line_id]));
           anki_csv +=  '<li>' + tmp_str + '</li>';
