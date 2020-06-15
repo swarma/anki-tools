@@ -162,7 +162,6 @@ function getItemTitle(item){
       res_str += imgParse(item['__transno_images']);
     }
   }
-  res_str = regexReplG(res_str, '^<span>([^<]*)<\/span>$', '$1');
   return res_str;
 }
 // 获取指定大纲条目的笔记
@@ -230,7 +229,8 @@ function markdown2HTML(input_str) {
   output_str = regexReplG(output_str, '_{2}([^_]+)_{2}', '<span class="italics">$1</span>');
   output_str = regexReplG(output_str, '\\^{2}([^\\^]+)\\^{2}', '<span class="highlight">$1</span>');
   output_str = regexReplG(output_str, '\\*([^\\*]+)\\*', '<span style="background-color:wheat;">$1</span>');
-  output_str = regexReplG(output_str, '\\!\\[[^\\[]*\\]\\(([^\(\)]*)\\)', '<img src="$1">');
+  output_str = regexReplG(output_str, '\\!\\[[^\\[]*\\]\\(([^\(\)]*)\\)', '<img src="$1" />');
+  output_str = regexReplG(output_str, '\\[([^\\[]*)\\]\\(([^\(\)]*)\\)', '<a href="$2">$1</a>');
   output_str = regexReplG(output_str, '<span>([^<]*)<\/span>', '$1');
   return output_str;
 }
@@ -331,6 +331,7 @@ function markdown2QA(markdown_text) {
 function postProcess(input_str) {
   let output_str = "";
   output_str = regexReplG(input_str, '<img src="([^"]+)">(。|；)', '<img src="$1">');
+  output_str = regexReplG(output_str, '<li>(<img[^<>]+>)<\/li>', '$1');
   output_str = regexReplG(output_str, '？(。|；)', '？');
   output_str = regexReplG(output_str, '；；', '；');
   output_str = regexReplG(output_str, '。。', '。');
@@ -346,17 +347,26 @@ function markdown2AnkiCSV(markdown_text) {
     if (item.children.length > 0) {
       anki_csv += markdown2HTML(item.title) + '\t' + 
         markdown2HTML(getAnkiChapterInfo(item, xpath)) + '\t';
+    }
+    if (item.children.length == 1) {
+      var tmp_str = markdown2HTML(getLineTitle(leveled_obj, item.children[0]));
+      anki_csv += tmp_str + '\n';
+    } else if (item.children.length > 1) {
       for (var child_line_id in item.children) {
-        if (child_line_id == item.children.length - 1) {
+        if (child_line_id == 0) {
           var tmp_str = markdown2HTML(getLineTitle(leveled_obj, item.children[child_line_id]));
-          anki_csv +=  tmp_str + '。\n';
+          anki_csv +=  '<ul><li>' + tmp_str + '</li>';
+        }
+        else if (child_line_id == item.children.length - 1) {
+          var tmp_str = markdown2HTML(getLineTitle(leveled_obj, item.children[child_line_id]));
+          anki_csv += '<li>' + tmp_str + '</li></ul>\n';
         } else {
           var tmp_str = markdown2HTML(getLineTitle(leveled_obj, item.children[child_line_id]));
-          anki_csv +=  tmp_str + '；<br>';
+          anki_csv +=  '<li>' + tmp_str + '</li>';
         }
-        anki_csv = postProcess(anki_csv);
       }
     }
+    anki_csv = postProcess(anki_csv);
   }
   return anki_csv;
 }
