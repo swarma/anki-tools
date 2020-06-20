@@ -60,6 +60,7 @@ function roamPreProcess(text) {
   let regex = /^( *)-/i;
   for (idx in lines) {
     let res = regex.exec(lines[idx]);
+    if (res == null) { alert("请仔细检查这一行的格式：\n\n【" + lines[idx].trim() + "】"); }
     spaces = res[1];
     tabs = spaces.length / 4 + 1;
     lines[idx] = lines[idx].replace(res[0], "#".repeat(tabs));
