@@ -57,13 +57,15 @@ function preProcess(text) {
 }
 function roamPreProcess(text) {
   let lines = preProcess(text).split("\n");
-  let regex = /^( *)-/i;
+  let regex = /^( *)-(.*)$/i;
   for (idx in lines) {
     let res = regex.exec(lines[idx]);
     if (res == null) { alert("请仔细检查这一行的格式：\n\n【" + lines[idx].trim() + "】"); }
-    spaces = res[1];
-    tabs = spaces.length / 4 + 1;
-    lines[idx] = lines[idx].replace(res[0], "#".repeat(tabs));
+    str_before_dash = res[1];
+    str_after_dash = res[2];
+    str_after_dash = regexReplG(str_after_dash.trim(), '^"(.*)"$', ' <u>$1</u>');
+    tab_cnt = str_before_dash.length / 4 + 1;
+    lines[idx] = "#".repeat(tab_cnt) + str_after_dash;
   }
   return lines.join("\n");
 }
@@ -339,7 +341,7 @@ function postProcess(input_str) {
   let output_str = "";
   output_str = regexReplG(input_str, '<img src="([^"]+)">(。|；)', '<img src="$1">');
   output_str = regexReplG(output_str, '<li>(<img[^<>]+>)<\/li>', '$1');
-  output_str = regexReplG(output_str, '<ol>(.*<img[^<>]+>.*)<\/ol>', '<ol style="list-style:none;">$1</ol>');
+  output_str = regexReplG(output_str, '<ol>(<li>((?!<li>).)*<\/li>)([^<>]*<img[^<>]+>[^<>]*)<\/ol>', '<ol style="list-style:none;">$1$3</ol>');
   output_str = regexReplG(output_str, '？(。|；)', '？');
   output_str = regexReplG(output_str, '；；', '；');
   output_str = regexReplG(output_str, '。。', '。');
