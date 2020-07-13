@@ -231,7 +231,7 @@ function markdown2HTML(input_str) {
   output_str = regexReplG(output_str, '\\*{2}([^\\*]+)\\*{2}', '<span class="bold">$1</span>');
   output_str = regexReplG(output_str, '_{2}([^_]+)_{2}', '<span class="italic">$1</span>');
   output_str = regexReplG(output_str, '\\^{2}([^\\^]+)\\^{2}', '<span class="highlight">$1</span>');
-  output_str = regexReplG(output_str, '\\*([^\\*]+)\\*', '<span style="background-color:wheat;">$1</span>');
+  output_str = regexReplG(output_str, '\\*([^\\*]+)\\*', '<span class="italic">$1</span>');
   output_str = regexReplG(output_str, '\\!\\[[^\\[]*\\]\\(([^\(\)]*)\\)', '<img src="$1" />');
   output_str = regexReplG(output_str, '\\[([^\\[]*)\\]\\(([^\(\)]*)\\)', '<a href="$2">$1</a>');
   output_str = regexReplG(output_str, '<span>([^<]*)<\/span>', '$1');
