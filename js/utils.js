@@ -273,18 +273,21 @@ function getXPathInOutline(leveled_obj, item) {
     var parent_line_id = findParent(leveled_obj, item.line_id);
     if (parent_line_id != -1) {
       parent_title = leveled_obj[parent_line_id].title;
+      parent_title = parent_title.replace('-','·');
       return html2text(markdown2HTML(parent_title));
     }
   } else if (item.level >= 3) {
     var parent_line_id = findParent(leveled_obj, item.line_id);
     if (parent_line_id != -1) {
       parent_title = leveled_obj[parent_line_id].title;
+      parent_title = parent_title.replace('-','·');
     }
     while (parent_line_id >= 0) {
       xpath.unshift(html2text(markdown2HTML(parent_title)));
       parent_line_id = findParent(leveled_obj, parent_line_id);
       if (parent_line_id != -1) {
         parent_title = leveled_obj[parent_line_id].title;
+        parent_title = parent_title.replace('-','·');
       }
     }
     return xpath.join('-');
@@ -300,10 +303,11 @@ function getNthLevelXPath(xpath, num) {
 
 function getAnkiChapterInfo(item, xpath) {
   var anki_chap_info = "";
+  var item_title = item.title.replace('-','·');
   if (item.level == 1) {
-    anki_chap_info = '《' + html2text(markdown2HTML(item.title)) + '》';
+    anki_chap_info = '《' + html2text(markdown2HTML(item_title)) + '》';
   }	else if (item.level == 2) {
-    anki_chap_info = '《' + xpath + '-' + html2text(markdown2HTML(item.title)) + '》';
+    anki_chap_info = '《' + xpath + '-' + html2text(markdown2HTML(item_title)) + '》';
   } else {
     anki_chap_info = '《' + getNthLevelXPath(xpath, 3) + '》';
   }
