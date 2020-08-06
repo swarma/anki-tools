@@ -131,6 +131,24 @@ function text2LeveledObj(markdown_lines) {
   }
   return leveled_obj;
 }
+function postTraverse(leveled_obj, root_line_id) {
+  var new_leveled_obj = []
+  if (!leveled_obj || leveled_obj.length == 0) {
+    return leveled_obj;
+  }
+  var root = leveled_obj[root_line_id];
+  for (var child_line_id of root.children.reverse()) {
+    var child = leveled_obj[child_line_id];
+    if (child.children.length == 0) {
+      new_leveled_obj.push(child);
+    }
+    else {
+      new_leveled_obj = postTraverse(leveled_obj, child.line_id).concat(new_leveled_obj);
+    }
+  }
+  new_leveled_obj.push(root);
+  return new_leveled_obj;
+}
 // 把 OPML 字符串转换为 JSON 对象以便做后续处理
 function OPML2JSON(opml) {
   var x2j = new X2JS();
@@ -323,17 +341,18 @@ function html2text(html) {
 function markdown2QA(markdown_text) {
   var qa_text = "";
   var leveled_obj = text2LeveledObj(markdown_text);
-  
-  for (var item of leveled_obj) {
+  var new_leveled_obj = postTraverse(leveled_obj, 0);
+
+  for (var item of new_leveled_obj) {
     var xpath = getXPathInOutline(leveled_obj, item);
     if (item.children.length > 0) {
       qa_text += '-----\n\n问题：' + item.title + '\n\n' +
         getAnkiChapterInfo(item, xpath) + '\n\n答案：';
-      for (var child_line_id in item.children) {
-        if (child_line_id == item.children.length - 1) {
-          qa_text += getLineTitle(leveled_obj, item.children[child_line_id]) + '\n\n';
+      for (var child_idx in item.children.reverse()) {
+        if (child_idx == item.children.length - 1) {
+          qa_text += getLineTitle(leveled_obj, item.children[child_idx]) + '\n\n';
         } else {
-          qa_text += getLineTitle(leveled_obj, item.children[child_line_id]) + '、';
+          qa_text += getLineTitle(leveled_obj, item.children[child_idx]) + '、';
         }
       }
     }
@@ -355,8 +374,9 @@ function postProcess(input_str) {
 function markdown2AnkiCSV(markdown_text) {
   var anki_csv = "";  
   var leveled_obj = text2LeveledObj(markdown_text);
-  
-  for (var item of leveled_obj) {
+  var new_leveled_obj = postTraverse(leveled_obj, 0);
+
+  for (var item of new_leveled_obj) {
     let xpath = getXPathInOutline(leveled_obj, item);
     if (item.children.length > 0) {
       anki_csv += markdown2HTML(item.title) + '\t' + 
@@ -366,16 +386,16 @@ function markdown2AnkiCSV(markdown_text) {
       var tmp_str = markdown2HTML(getLineTitle(leveled_obj, item.children[0]));
       anki_csv += tmp_str + '\n';
     } else if (item.children.length > 1) {
-      for (var child_line_id in item.children) {
-        if (child_line_id == 0) {
-          var tmp_str = markdown2HTML(getLineTitle(leveled_obj, item.children[child_line_id]));
+      for (var child_idx in item.children.reverse()) {
+        if (child_idx == 0) {
+          var tmp_str = markdown2HTML(getLineTitle(leveled_obj, item.children[child_idx]));
           anki_csv +=  '<ol><li>' + tmp_str + '</li>';
         }
-        else if (child_line_id == item.children.length - 1) {
-          var tmp_str = markdown2HTML(getLineTitle(leveled_obj, item.children[child_line_id]));
+        else if (child_idx == item.children.length - 1) {
+          var tmp_str = markdown2HTML(getLineTitle(leveled_obj, item.children[child_idx]));
           anki_csv += '<li>' + tmp_str + '</li></ol>\n';
         } else {
-          var tmp_str = markdown2HTML(getLineTitle(leveled_obj, item.children[child_line_id]));
+          var tmp_str = markdown2HTML(getLineTitle(leveled_obj, item.children[child_idx]));
           anki_csv +=  '<li>' + tmp_str + '</li>';
         }
       }
