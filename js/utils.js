@@ -341,23 +341,42 @@ function html2text(html) {
 function markdown2QA(markdown_text) {
   var qa_text = "";
   var leveled_obj = text2LeveledObj(markdown_text);
-  var new_leveled_obj = postTraverse(leveled_obj, 0);
 
-  for (var item of new_leveled_obj) {
-    var xpath = getXPathInOutline(leveled_obj, item);
+  for (var item of leveled_obj) {
+    if (item.level <= 3 || item.level > 5) { continue; }
     if (item.children.length > 0) {
-      qa_text += '-----\n\n问题：' + item.title + '\n\n' +
-        getAnkiChapterInfo(item, xpath) + '\n\n答案：';
-      for (var child_idx in item.children.reverse()) {
-        if (child_idx == item.children.length - 1) {
-          qa_text += getLineTitle(leveled_obj, item.children[child_idx]) + '\n\n';
-        } else {
-          qa_text += getLineTitle(leveled_obj, item.children[child_idx]) + '、';
-        }
+      qa_text += '---- 。。。----\n\n\n问：' + 
+        stripHtml(markdown2HTML(item.title)) + '？。。。。\n\n答：\n';
+      var cnt = 1;
+      for (var child_idx in item.children) {
+        var lineTitle = stripHtml(markdown2HTML(getLineTitle(leveled_obj, item.children[child_idx])));
+        var prefix = cnt + ". ";
+        if (1 == countAns(leveled_obj, item.children)) { prefix = ""; }
+        if (0 == lineTitle.trim().length) { continue; }
+        qa_text += "    " + prefix + lineTitle + "。。\n";
+        cnt++;
       }
+      qa_text += "\n\n";
     }
   }
   return qa_text;
+}
+
+function countAns(leveled_obj, children) {
+  var total = 0;
+  for (var idx in children) {
+    var lineTitle = stripHtml(markdown2HTML(getLineTitle(leveled_obj, children[idx])));
+    if (0 == lineTitle.trim().length) { continue; }
+    total++;
+  }
+  return total;
+}
+
+function stripHtml(html)
+{
+   var tmp = document.createElement("DIV");
+   tmp.innerHTML = html;
+   return tmp.textContent || tmp.innerText || "";
 }
 // 对已经转换为 HTML 格式的文本做必要的后处理
 function postProcess(input_str) {
