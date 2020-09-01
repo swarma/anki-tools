@@ -345,15 +345,15 @@ function markdown2QA(markdown_text) {
   for (var item of leveled_obj) {
     if (item.level <= 3 || item.level > 5) { continue; }
     if (item.children.length > 0) {
-      qa_text += '---- [p2400] ----\n\n\n问：' + 
-        stripHtml(markdown2HTML(item.title)) + '？ [p3600] \n\n答：\n';
+      qa_text += '---- [p2400] ----\n\n\n想一想：[p600] ' + 
+        stripHtml(markdown2HTML(item.title)) + ' [p3600] \n\n';
       var cnt = 1;
       for (var child_idx in item.children) {
         var lineTitle = stripHtml(markdown2HTML(getLineTitle(leveled_obj, item.children[child_idx])));
-        var prefix = cnt + ". ";
+        var prefix = "（" + cnt + "）";
         if (1 == countAns(leveled_obj, item.children)) { prefix = ""; }
         if (0 == lineTitle.trim().length) { continue; }
-        qa_text += "    " + prefix + lineTitle + " [p1200] \n";
+        qa_text += prefix + lineTitle + " [p1200] \n";
         cnt++;
       }
       qa_text += "\n\n";
