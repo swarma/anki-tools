@@ -37,6 +37,7 @@
       </div>
       <div class="output-pane">
           <textarea id="anki_qna" class="output_qna" ></textarea>
+          <button class="save_button" onclick='download("qa.txt",document.getElementById("anki_qna").value)'>保存为 qa.csv</button>
           <textarea id="anki_csv" class="output_anki" ></textarea>
           <button class="save_button" onclick='download("anki.csv",document.getElementById("anki_csv").value)'>保存为 anki.csv</button>
       </div>
