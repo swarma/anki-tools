@@ -176,8 +176,8 @@ function getItemTitle(item){
     if ('__mubu_text' in item && is_md == -1) {
       res_str = remove_html_link_tag(decodeHTML(decodeURI(item['__mubu_text'])));
     }
-    if ('__images' in item) {
-      res_str += imgParse(item['__images']);
+    if ('__mubu_images' in item) {
+      res_str += imgParse(item['__mubu_images']);
     }
     if ('__transno_images' in item) {
       res_str += imgParse(item['__transno_images']);
