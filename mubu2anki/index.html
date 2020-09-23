@@ -17,6 +17,7 @@
         <h2>把幕布 OPML 转换为 Anki 卡片</h2>
         <h3>使用说明</h3>
         <p>在左侧上传幕布 OPML 文件, 在右侧获取 Anki CSV</p>
+        <p><b><a href="https://anki.wiki/2020/09/06/">❓常见问题及解决办法✅</a></b></p>
         <h3>示例输入（幕布大纲笔记）</h3>
         <p>在幕布中编辑大纲笔记，然后导出为 OPML 文件</p>
         <img src="mubu-opml-demo-input.png" />
@@ -36,8 +37,9 @@
       </div>
       <div class="output-pane">
           <textarea id="anki_qna" class="output_qna" ></textarea>
+          <button class="save_button" onclick='download(".txt",document.getElementById("anki_qna").value)'>保存到 讯飞有声 听一听</button>
           <textarea id="anki_csv" class="output_anki" ></textarea>
-          <button class="save_button" onclick='download("anki.csv",document.getElementById("anki_csv").value)'>保存为 anki.csv</button>
+          <button class="save_button" onclick='download(".csv",document.getElementById("anki_csv").value)'>保存为 Anki 专用 CSV 文件</button>
       </div>
       <!-- 在这里定义网页交互事件 --> 
       <script>

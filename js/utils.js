@@ -63,6 +63,7 @@ function roamPreProcess(text) {
     if (res == null) { alert("请仔细检查这一行的格式：\n\n【" + lines[idx].trim() + "】"); }
     str_before_dash = res[1];
     str_after_dash = res[2];
+		str_after_dash = regexReplG(str_after_dash.trim(), '#[^ \r\n]+( |$)', '');
     str_after_dash = regexReplG(str_after_dash.trim(), '^"(.*)"$', ' <u>$1</u>');
     tab_cnt = str_before_dash.length / 4 + 1;
     lines[idx] = "#".repeat(tab_cnt) + str_after_dash;
@@ -315,7 +316,7 @@ function getXPathInOutline(leveled_obj, item) {
 function getNthLevelXPath(xpath, num) {
   var nth_level_xpath = "";
   var tmp_list = xpath.split('-').slice(0, num);
-  nth_level_xpath = tmp_list.join('-');
+  nth_level_xpath = tmp_list.join(' - ');
   return nth_level_xpath;
 }
 
@@ -325,7 +326,7 @@ function getAnkiChapterInfo(item, xpath) {
   if (item.level == 1) {
     anki_chap_info = '《' + html2text(markdown2HTML(item_title)) + '》';
   }	else if (item.level == 2) {
-    anki_chap_info = '《' + xpath + '-' + html2text(markdown2HTML(item_title)) + '》';
+    anki_chap_info = '《' + xpath + ' - ' + html2text(markdown2HTML(item_title)) + '》';
   } else {
     anki_chap_info = '《' + getNthLevelXPath(xpath, 3) + '》';
   }
@@ -424,11 +425,12 @@ function markdown2AnkiCSV(markdown_text) {
   return anki_csv;
 }
 // 点击下载按钮后，利用此方法创建文件并唤起下载动作
-function download(filename, text) {
+function download(file_ext, text) {
   var pom = document.createElement('a');
+  var markdown_box = document.getElementById('markdown');
+  var filename = getFileName(markdown_box.value);
   pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-  pom.setAttribute('download', filename);
-  
+  pom.setAttribute('download', filename + file_ext);
   if (document.createEvent) {
     var event = document.createEvent('MouseEvents');
     event.initEvent('click', true, true);
@@ -437,4 +439,33 @@ function download(filename, text) {
   else {
     pom.click();
   }
+}
+
+Date.prototype.format = function(fmt){
+  var o = {
+    "M+" : this.getMonth()+1,                 //月份
+    "d+" : this.getDate(),                    //日
+    "h+" : this.getHours(),                   //小时
+    "m+" : this.getMinutes(),                 //分
+    "s+" : this.getSeconds(),                 //秒
+    "q+" : Math.floor((this.getMonth()+3)/3), //季度
+    "S"  : this.getMilliseconds()             //毫秒
+  };
+  if(/(y+)/.test(fmt)){
+    fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));
+  }
+  for(var k in o){
+    if(new RegExp("("+ k +")").test(fmt)){
+      fmt = fmt.replace(
+        RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));  
+    }       
+  }
+  return fmt;
+}
+
+function getFileName(markdown_text){
+  var leveled_obj = text2LeveledObj(markdown_text);
+  var dt = new Date().format("yyyy年MM月dd日-");
+  var topic = getXPathInOutline(leveled_obj, leveled_obj[3]);
+  return dt + topic;  
 }
