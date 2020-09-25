@@ -63,7 +63,7 @@ function roamPreProcess(text) {
     if (res == null) { alert("请仔细检查这一行的格式：\n\n【" + lines[idx].trim() + "】"); }
     str_before_dash = res[1];
     str_after_dash = res[2];
-		str_after_dash = regexReplG(str_after_dash.trim(), '#[^ \r\n]+( |$)', '');
+		str_after_dash = regexReplG(str_after_dash.trim(), '#([^ \r\n]+)( |$)', '$1 ');
     str_after_dash = regexReplG(str_after_dash.trim(), '^"(.*)"$', ' <u>$1</u>');
     tab_cnt = str_before_dash.length / 4 + 1;
     lines[idx] = "#".repeat(tab_cnt) + str_after_dash;
