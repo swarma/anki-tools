@@ -50,25 +50,48 @@ function readLocalFile(e) {
 function preProcess(text) {
   var res_str = text;
   res_str = regexReplG(res_str.trim(), '&nbsp;', ' ');
+  res_str = regexReplG(res_str.trim(), /\\\[\\\[([^\]\\]+)\\\]\\\]/, '[[$1]]');
+	res_str = regexReplG(res_str.trim(), /!\\\[\\\]/, '![]');
+  res_str = regexReplG(res_str.trim(), /\\\*\\\*([^\*\\]+)\\\*\\\*/, '**$1**');
+	res_str = regexReplG(res_str.trim(), '\(\/(img\/uploads\/[0-9a-z]+\.(png|jpg|jpeg|gif|webp))\)', 'https://hulunote.com$1');
   res_str = regexReplG(res_str.trim(), '^[\r\n]+', '');
   res_str = regexReplG(res_str.trim(), '[\r\n]+$', '');
   res_str = regexReplG(res_str.trim(), '[\r\n]+', '\n');
+  res_str = regexReplG(res_str.trim(), '[\r\n]+[ ]*[\r\n]+', '\n');
   return res_str;
 }
 function roamPreProcess(text) {
-  let lines = preProcess(text).split("\n");
-  let regex = /^( *)-(.*)$/i;
+  let text2 = quotePairPreProcess(text.trim());
+  let lines = text2.split("\n");
+  let regex = /^( *)[*-](.*)$/i;
   for (idx in lines) {
     let res = regex.exec(lines[idx]);
     if (res == null) { alert("请仔细检查这一行的格式：\n\n【" + lines[idx].trim() + "】"); }
     str_before_dash = res[1];
     str_after_dash = res[2];
-		str_after_dash = regexReplG(str_after_dash.trim(), '#([^ \r\n]+)( |$)', '$1 ');
-    str_after_dash = regexReplG(str_after_dash.trim(), '^"(.*)"$', ' <u>$1</u>');
+    str_after_dash = regexReplG(str_after_dash.trim(), '#([^ \r\n]+)( |$)', '$1 ');
     tab_cnt = str_before_dash.length / 4 + 1;
     lines[idx] = "#".repeat(tab_cnt) + str_after_dash;
   }
   return lines.join("\n");
+}
+// 对文本中的成对英文双引号做替换处理
+function quotePairPreProcess(text){
+  let vec = text.split('"');
+  let out = "";
+  for (idx in vec) {
+      let sep = "";
+      if (idx == (vec.length - 1)) {
+          sep = "";
+      } else if (idx % 2 == 0) {
+      sep = "<u>";
+    }
+    else {
+          sep = "</u>";
+      }
+      out += vec[idx] + sep;
+  }
+  return out;
 }
 // 对文本内容中的 > < 等符号做编码处理
 function encodeHTML(text) {
@@ -115,7 +138,7 @@ function getTitleAndLevel(markdown_line) {
 // 把 Markdown 标题序列转换为 LeveledObj 对象以便做后续处理
 function text2LeveledObj(markdown_lines) {
   var clean_markdown_lines = preProcess(markdown_lines);
-  if (clean_markdown_lines.startsWith("-")) {
+  if (clean_markdown_lines.startsWith("-") || clean_markdown_lines.startsWith("*")) {
     clean_markdown_lines = roamPreProcess(clean_markdown_lines);
   }
   var lines = clean_markdown_lines.split("\n");  
