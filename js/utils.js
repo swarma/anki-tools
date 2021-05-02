@@ -53,6 +53,8 @@ function preProcess(text) {
   res_str = regexReplG(res_str.trim(), /\\\[\\\[([^\]\\]+)\\\]\\\]/, '[[$1]]');
 	res_str = regexReplG(res_str.trim(), /!\\\[\\\]/, '![]');
   res_str = regexReplG(res_str.trim(), /\\\*\\\*([^\*\\]+)\\\*\\\*/, '**$1**');
+	res_str = regexReplG(res_str.trim(), /\\_\\_([^_\\]+)\\_\\_/, '__$1__');
+	res_str = regexReplG(res_str.trim(), /\\`/, '`');
 	res_str = regexReplG(res_str.trim(), '\(\/(img\/uploads\/[0-9a-z]+\.(png|jpg|jpeg|gif|webp))\)', 'https://hulunote.com$1');
   res_str = regexReplG(res_str.trim(), '^[\r\n]+', '');
   res_str = regexReplG(res_str.trim(), '[\r\n]+$', '');
